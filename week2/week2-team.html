@@ -9,13 +9,14 @@
 <body>
     <form action="submit" title="submit">
         <input type="text" id="textinput"></input>
-        <button type="button" onclick="readform()">Submit</button>
+        <button type="button" onclick="readForm()">Submit</button>
     </form>
     <div id="div1">
         <script>
         function readForm(){
-            var inputData = document.getElementById("textinput");
-            console.log(inputData);
+            var inputData = document.getElementById("textinput").value;
+            const div1 = document.getElementById("div1");
+            div1.innerHTML
         }
         </script>
     </div>
