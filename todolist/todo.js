@@ -1,55 +1,100 @@
-// Create a "close" button and append it to each list item
-var myNodelist = document.getElementsByTagName("LI");
-var i;
-for (i = 0; i < myNodelist.length; i++) {
-  var span = document.createElement("SPAN");
-  var txt = document.createTextNode("\u00D7");
-  span.className = "close";
-  span.appendChild(txt);
-  myNodelist[i].appendChild(span);
+const todos = [];
+const todosFragment = document.createDocumentFragment();
+const $todosList = document.querySelector('.js-todos-list');
+const $formAddButton = document.querySelector('.js-btn-add');
+const $formInput = document.querySelector('.js-form-input');
+const $formMessage = document.querySelector('.js-alert');
+const $FilterBtnCollection = document.querySelectorAll('.js-filter-btn');
+let count = 0;
+
+function resetForm() {
+  $formInput.value = '';
+  $formMessage.innerHTML = '';
+  $formMessage.classList.remove('Alert--error');
 }
 
-// Click on a close button to hide the current list item
-var close = document.getElementsByClassName("close");
-var i;
-for (i = 0; i < close.length; i++) {
-  close[i].onclick = function() {
-    var div = this.parentElement;
-    div.style.display = "none";
+function setTodoStatus(event) {
+  const searchId = parseInt(event.target.parentNode.dataset.id);
+  const index = todos.findIndex(todo => todo.id === searchId);
+  const currentTodo = todos[index]; 
+  currentTodo.complete = !currentTodo.complete;
+}
+
+function createListItemNode(todo) {
+  const listItem = document.createElement('li');
+  const checkbox = document.createElement('input');
+  const label = document.createElement('label');
+  const checkboxName = `checkbox-${todo.id}`;
+  checkbox.id = checkboxName;
+  checkbox.type = 'checkbox';
+  checkbox.checked = todo.complete;
+  checkbox.onclick = setTodoStatus;
+  label.textContent = todo.text;
+  label.setAttribute('for', checkboxName);
+  listItem.setAttribute('data-id', todo.id);
+  listItem.appendChild(checkbox);
+  listItem.appendChild(label);
+  return listItem;
+}
+
+function appendFragmentToList(todo, fragment) {
+  const todoNode = createListItemNode(todo);
+  fragment.appendChild(todoNode);
+  $todosList.appendChild(fragment);
+}
+
+function addTodo(event) {
+  event.preventDefault();
+  if (!$formInput.value) {
+    throw Error('Please add text in your task :)');
+  }
+  const todo = {
+    id: count++,
+    text: $formInput.value,
+    complete: false
+  };
+  todos.push(todo);
+  appendFragmentToList(todo, todosFragment);
+  resetForm();
+  $formInput.focus();
+}
+
+function removeAllChildNodesFrom($element) {
+  while($element.hasChildNodes()) {
+    $element.removeChild($element.lastChild);
   }
 }
 
-// Add a "checked" symbol when clicking on a list item
-var list = document.querySelector('ul');
-list.addEventListener('click', function(ev) {
-  if (ev.target.tagName === 'LI') {
-    ev.target.classList.toggle('checked');
+function filterList(todos, fragment, filterCallback) {
+  todos.filter(filterCallback)
+    .forEach(filteredTodo => appendFragmentToList(filteredTodo, todosFragment));
+}
+
+/* Event Listeners */
+$formAddButton.addEventListener('click', (e) => {
+  try {
+    console.time("js addTodo");
+    addTodo(e);
+    console.timeEnd("js addTodo");
+  } catch(error) {
+    $formMessage.classList.add('Alert--error');
+    $formMessage.innerHTML = error.message;
   }
-}, false);
+});
 
-// Create a new list item when clicking on the "Add" button
-function newElement() {
-  var li = document.createElement("li");
-  var inputValue = document.getElementById("myInput").value;
-  var t = document.createTextNode(inputValue);
-  li.appendChild(t);
-  if (inputValue === '') {
-    alert("You must write something!");
-  } else {
-    document.getElementById("myUL").appendChild(li);
-  }
-  document.getElementById("myInput").value = "";
-
-  var span = document.createElement("SPAN");
-  var txt = document.createTextNode("\u00D7");
-  span.className = "close";
-  span.appendChild(txt);
-  li.appendChild(span);
-
-  for (i = 0; i < close.length; i++) {
-    close[i].onclick = function() {
-      var div = this.parentElement;
-      div.style.display = "none";
+$FilterBtnCollection.forEach($filterBtn => {
+  $filterBtn.addEventListener('click', (event) => {
+    const filter = event.target.dataset.filter || 'all';
+    removeAllChildNodesFrom($todosList);
+    switch(filter) {
+      case 'completed':
+        filterList(todos, todosFragment, (todo) => todo.complete);
+        break;
+      case 'active':
+        filterList(todos, todosFragment, (todo) => !todo.complete);
+        break;
+      default:
+        filterList(todos, todosFragment, (todo) => todo);
     }
-  }
-}
+  });
+});

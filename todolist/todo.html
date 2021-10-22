@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
-    <link rel="stylesheet" href="todo.css">
+    <title>Document</title>
+    <link rel="stylesheet" href="/todolist/todo.css">
 </head>
 <body>
-    <main>
-        <div id="myDIV" class="header">
-            <h2>My To Do List</h2>
-            <input type="text" id="myInput" placeholder="Title...">
-            <span onclick="newElement()" class="addBtn">Add</span>
-            <span onclick="newElement()" class="all">All</span>
-            <span onclick="doneList()" class="done">Done</span>
-            <span onclick="incompleteList()" class="Incomplete">Incomplete</span>
-          </div>
-          
-          <ul id="myUL">
-            <li>Hit the gym</li>
-            <li class="checked">Pay bills</li>
-            <li>Meet George</li>
-            <li>Buy eggs</li>
-            <li>Read a book</li>
-            <li>Organize office</li>
-          </ul>
-      </main>
-      <script src="todo.js"></script>
+  <header>
+    <h1>My To Do List</h1>
+  </header>
+    <div class="Container TodoApp">
+      
+        <div class="section">
+          <form class="Form">
+            <input type="text" class="Form-input js-form-input" placeholder="What do you need to do today?"/>
+            <button class="Btn js-btn-add">Add</button>
+          </form>
+        </div>  
+        <div class="section-filter">
+          <button class="Btn Btn--link js-filter-btn" data-filter="completed">Complete</button>
+          <button class="Btn Btn--link js-filter-btn" data-filter="active">Incomplete</button>
+          <button class="Btn Btn--link js-filter-btn" data-filter="all">All</button>
+      </div>
+      <div class="Section">
+        <ul class="TodoApp-list js-todos-list"></ul>  
+        <div class="Alert js-alert"></div>
+      </div>
+    </div>
+    <script src="todo.js"></script>
 </body>
 </html>
